@@ -51,7 +51,7 @@ if __name__ == "__main__":
     #iniciando os processos
     for i in range(qtd_processos_iniciar): #com cinco elementos a priori
         random.seed(time.time())
-        process = Process(random.randint(0,9000000)) #gerando ids aleatórios para os processos.
+        process = Process(random.randint(0,999999999)) #gerando ids aleatórios para os processos.
         thread = threading.Thread(target = semaphore_emulation, args = (process,))
         thread.start() # inicializando as threads
 
