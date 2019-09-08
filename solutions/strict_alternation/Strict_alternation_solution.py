@@ -10,13 +10,6 @@ counter = 0
 turn = -1
 shared_variable = 0
 
-def change_turn():
-    global process_list, turn, counter
-
-    for x in range(len(process_list)):
-        if counter == x:
-            turn = process_list[x].process_id
-            break
 
 def strict_alternation(process):
     global turn, process_list
@@ -25,7 +18,7 @@ def strict_alternation(process):
     enter_critical_region(process)
     time.sleep(5) #espera 5 segundos
     leave_critical_region(process)
-    change_turn()
+    turn = process_list[counter].process_id
     print("==========================\n")
 
 
