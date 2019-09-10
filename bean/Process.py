@@ -1,6 +1,6 @@
 #Classe representando um processo.
 
-class Process():
+class Process:
 
     def __init__(self, process_id, priority = 1, process_state="ready"):
         self.process_id = process_id
