@@ -1,4 +1,4 @@
-from peterson import PetersonProcess
+from solutions.busy_wait.peterson.peterson import PetersonProcess
 
 peterson1 = PetersonProcess(0, 10000)
 peterson2 = PetersonProcess(1, 10000)

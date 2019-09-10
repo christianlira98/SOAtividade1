@@ -1,4 +1,4 @@
-from ....bean.Process import Process
+from bean.Process import Process
 
 number_of_processes = 5
 
