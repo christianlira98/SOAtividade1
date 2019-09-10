@@ -13,7 +13,7 @@ class Strict_alternation_process(Process):
 
 
     def __init__(self, process_id, priority = 1, process_state="ready"):
-        Process.__init__(self, process_id, priority, process_state="ready")
+        Process.__init__(self, process_id, priority, process_state)
 
     def run(self):
         global turn, process_list
@@ -28,7 +28,7 @@ class Strict_alternation_process(Process):
     def enter_critical_region(self):
         global shared_variable
 
-        process.process_state = "running"
+        self.process_state = "running"
         print(f"\nIniciando o {repr(self)}")
         print(f"O {repr(self)} está entrando na região crítica...")
         time.sleep(0.75)
@@ -42,14 +42,14 @@ class Strict_alternation_process(Process):
         time.sleep(0.75)
         shared_variable += increment
 
-        print(f"\nO {repr(process)} executou a operação variavel compartilhada + {increment}...")
+        print(f"\nO {repr(self)} executou a operação variavel compartilhada + {increment}...")
         time.sleep(0.75)
 
         print(f"Novo valor da variável compartilhada: {shared_variable}")
 
     def leave_critical_region(self):
         global counter
-        process.process_state = "Stopped"
+        self.process_state = "Stopped"
         print(f"\nO {repr(self)} está saindo da região crítica...")
         counter = (counter + 1) % len(process_list)
 
@@ -63,7 +63,7 @@ if __name__ == "__main__":
     #iniciando os processos
     for i in range(qtd_processos_iniciar): #com cinco elementos a priori
         random.seed(time.time())
-        process = strict_alternation_process(random.randint(0,999999999)) #gerando ids aleatórios para os processos.
+        process = Strict_alternation_process(random.randint(0,999999999)) #gerando ids aleatórios para os processos.
         process_list.append(process)
         if i == 0:
             turn = process.process_id

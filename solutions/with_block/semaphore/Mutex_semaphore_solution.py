@@ -10,7 +10,7 @@ shared_variable = 0
 class Mutex_process(Process):
 
     def __init__(self, process_id, priority = 1, process_state="ready"):
-        Process.__init__(self, process_id, priority, process_state="ready")
+        Process.__init__(self, process_id, priority, process_state)
 
     def run(self):
         self.enter_critical_region()
@@ -21,7 +21,7 @@ class Mutex_process(Process):
     def enter_critical_region(self):
         global shared_variable
         sem.acquire()
-        process.process_state = "running"
+        self.process_state = "running"
         print(f"\nIniciando o {repr(process)}")
         print(f"O {repr(self)} está entrando na região crítica...")
         time.sleep(0.75)
@@ -35,13 +35,13 @@ class Mutex_process(Process):
         time.sleep(0.75)
         shared_variable += increment
 
-        print(f"\nO {repr(process)} executou a operação variavel compartilhada + {increment}...")
+        print(f"\nO {repr(self)} executou a operação variavel compartilhada + {increment}...")
         time.sleep(0.75)
 
         print(f"Novo valor da variável compartilhada: {shared_variable}")
 
     def leave_critical_region(self):
-        process.process_state = "Stopped"
+        self.process_state = "Stopped"
         print(f"\nO {repr(self)} está saindo da região crítica...")
         sem.release()
 
