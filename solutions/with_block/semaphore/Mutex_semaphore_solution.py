@@ -7,38 +7,43 @@ from bean.Process import Process
 sem = None
 shared_variable = 0
 
-def semaphore_emulation(process):
-    enter_critical_region(process)
-    time.sleep(5)  # espera 5 segundos
-    leave_critical_region(process)
-    print("==========================\n")
+class Mutex_process(Process):
 
-def enter_critical_region(process):
-    global shared_variable
-    sem.acquire()
-    process.process_state = "running"
-    print(f"\nIniciando o {repr(process)}")
-    print(f"O {repr(process)} está entrando na região crítica...")
-    time.sleep(0.75)
+    def __init__(self, process_id, priority = 1, process_state="ready"):
+        Process.__init__(self, process_id, priority, process_state="ready")
 
-    print(f"\nO {repr(process)} está com o acesso a variavél compartilhada...")
-    time.sleep(0.75)
-    random.seed(time.time())
-    increment = random.randint(0, 10)
+    def run(self):
+        self.enter_critical_region()
+        time.sleep(5)  # espera 5 segundos
+        self.leave_critical_region()
+        print("==========================\n")
 
-    print(f"Valor atual da variável compartilhada: {shared_variable}")
-    time.sleep(0.75)
-    shared_variable += increment
+    def enter_critical_region(self):
+        global shared_variable
+        sem.acquire()
+        process.process_state = "running"
+        print(f"\nIniciando o {repr(process)}")
+        print(f"O {repr(self)} está entrando na região crítica...")
+        time.sleep(0.75)
 
-    print(f"\nO {repr(process)} executou a operação variavel compartilhada + {increment}...")
-    time.sleep(0.75)
+        print(f"\nO {repr(self)} está com o acesso a variavél compartilhada...")
+        time.sleep(0.75)
+        random.seed(time.time())
+        increment = random.randint(0, 10)
 
-    print(f"Novo valor da variável compartilhada: {shared_variable}")
+        print(f"Valor atual da variável compartilhada: {shared_variable}")
+        time.sleep(0.75)
+        shared_variable += increment
 
-def leave_critical_region(process):
-    process.process_state = "Stopped"
-    print(f"\nO {repr(process)} está saindo da região crítica...")
-    sem.release()
+        print(f"\nO {repr(process)} executou a operação variavel compartilhada + {increment}...")
+        time.sleep(0.75)
+
+        print(f"Novo valor da variável compartilhada: {shared_variable}")
+
+    def leave_critical_region(self):
+        process.process_state = "Stopped"
+        print(f"\nO {repr(self)} está saindo da região crítica...")
+        sem.release()
 
 if __name__ == "__main__":
 
@@ -51,9 +56,8 @@ if __name__ == "__main__":
     #iniciando os processos
     for i in range(qtd_processos_iniciar): #com cinco elementos a priori
         random.seed(time.time())
-        process = Process(random.randint(0,999999999)) #gerando ids aleatórios para os processos.
-        thread = threading.Thread(target = semaphore_emulation, args = (process,))
-        thread.start() # inicializando as threads
+        process = Mutex_process(random.randint(0,999999999)) #gerando ids aleatórios para os processos.
+        process.start() # inicializando as threads
 
 
 

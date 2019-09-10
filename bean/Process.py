@@ -1,8 +1,10 @@
+import threading
 #Classe representando um processo.
 
-class Process:
+class Process(threading.Thread):
 
     def __init__(self, process_id, priority = 1, process_state="ready"):
+        threading.Thread.__init__(self)
         self.process_id = process_id
         self.process_state = process_state
         self.priority = 1 and priority # 1 significa low e 0 significa high

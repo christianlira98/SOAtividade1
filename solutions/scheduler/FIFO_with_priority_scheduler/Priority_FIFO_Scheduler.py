@@ -8,50 +8,53 @@ from queue import PriorityQueue
 shared_variable = 0
 process_fifo = None
 
-def fifo(process):
-    global process_priority_queue, process_fifo
 
-    while process_fifo == None or process.process_id != process_fifo[1].process_id:
-        process_fifo = process_priority_queue.queue[0]
-        threading.Lock().acquire(timeout=0.25) #bloqueia e verifica a cada 0.25 se pode ser desbloqueada
+class FIFO_Process(Process):
 
-    enter_critical_region(process)
-    time.sleep(5)  # espera 5 segundos
-    leave_critical_region(process)
+    def __init__(self, process_id, priority=1, process_state="ready"):
+        Process.__init__(self, process_id, priority, process_state="ready")
 
-    if not process_priority_queue.empty():
-        process_fifo = process_priority_queue.get() #tira da fila.
+    def run(self):
+        global process_priority_queue, process_fifo
+        while process_fifo == None or self.process_id != process_fifo[1].process_id:
+            process_fifo = process_priority_queue.queue[0]
+            threading.Lock().acquire(timeout=0.25)  # bloqueia e verifica a cada 0.25 se pode ser desbloqueada
 
-    print("==========================\n")
+        self.enter_critical_region()
+        time.sleep(5)  # espera 5 segundos
+        self.leave_critical_region()
 
-def enter_critical_region(process):
-    global shared_variable
+        if not process_priority_queue.empty():
+            process_fifo = process_priority_queue.get()  # tira da fila.
 
-    process.process_state = "running"
-    print(f"\nIniciando o {repr(process)}")
-    print(f"O {repr(process)} está entrando na região crítica...")
-    time.sleep(0.75)
+        print("==========================\n")
 
-    print(f"\nO {repr(process)} está com o acesso a variavél compartilhada...")
-    time.sleep(0.75)
-    random.seed(time.time())
-    increment = random.randint(0, 10)
+    def enter_critical_region(self):
+        global shared_variable
 
-    print(f"Valor atual da variável compartilhada: {shared_variable}")
-    time.sleep(0.75)
-    shared_variable += increment
+        process.process_state = "running"
+        print(f"\nIniciando o {repr(self)}")
+        print(f"O {repr(self)} está entrando na região crítica...")
+        time.sleep(0.75)
 
-    print(f"\nO {repr(process)} executou a operação variavel compartilhada + {increment}...")
-    time.sleep(0.75)
+        print(f"\nO {repr(self)} está com o acesso a variavél compartilhada...")
+        time.sleep(0.75)
+        random.seed(time.time())
+        increment = random.randint(0, 10)
 
-    print(f"Novo valor da variável compartilhada: {shared_variable}")
+        print(f"Valor atual da variável compartilhada: {shared_variable}")
+        time.sleep(0.75)
+        shared_variable += increment
 
-def leave_critical_region(process):
-    global counter
-    process.process_state = "Stopped"
-    print(f"\nO {repr(process)} está saindo da região crítica...")
+        print(f"\nO {repr(process)} executou a operação variavel compartilhada + {increment}...")
+        time.sleep(0.75)
 
+        print(f"Novo valor da variável compartilhada: {shared_variable}")
 
+    def leave_critical_region(self):
+        global counter
+        process.process_state = "Stopped"
+        print(f"\nO {repr(self)} está saindo da região crítica...")
 
 if __name__ == "__main__":
 
@@ -75,13 +78,13 @@ if __name__ == "__main__":
         process = None
 
         if i <= qtd_low_priority:
-            process = Process(random.randint(0,999999999), priority = priority_enum.LOW) #gerando ids aleatórios para os processos.
+            process = FIFO_Process(random.randint(0,999999999), priority = priority_enum.LOW) #gerando ids aleatórios para os processos.
         else:
-            process = Process(random.randint(0, 999999999), priority = priority_enum.HIGH)  # gerando ids aleatórios para os processos.
+            process = FIFO_Process(random.randint(0, 999999999), priority = priority_enum.HIGH)  # gerando ids aleatórios para os processos.
 
         process_priority_queue.put((process.priority, process))
-        thread = threading.Thread(target = fifo, args = (process,))
-        threads.append(thread)
+        #thread = threading.Thread(target = fifo, args = (process,))
+        threads.append(process)
 
 
     for i in range(qtd_processos_iniciar):
