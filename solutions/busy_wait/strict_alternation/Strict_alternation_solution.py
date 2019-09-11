@@ -3,6 +3,7 @@ import time
 import random
 from bean.Process import Process
 
+
 #Variáveis globais auxiliares.
 process_list = []
 counter = 0
