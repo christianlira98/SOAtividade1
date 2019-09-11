@@ -2,7 +2,7 @@ import threading
 import time
 import random
 from bean.Process import Process
-from bean.Semaphore import Semaphore
+from bean.Semaphore import Mutex_Semaphore
 
 #Variáveis globais auxiliares.
 sem = None
@@ -54,8 +54,8 @@ if __name__ == "__main__":
     print("Mutex Semaphore Solution: Christian Lira/Jonas Freire/Pedro Araújo")
     qtd_processos_iniciar = int(input("Quantidade de processos a ser iniciada: "))
 
-    #sem = threading.Semaphore(1) #Mutex
-    sem = Semaphore(1)  # Mutex
+
+    sem = Mutex_Semaphore()  # semaforo mutex
     #iniciando os processos
     for i in range(qtd_processos_iniciar): #com cinco elementos a priori
         random.seed(time.time())

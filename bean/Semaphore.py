@@ -1,11 +1,11 @@
 import threading
 from queue import Queue
 
-class Semaphore():
+class Mutex_Semaphore():
 
-    def __init__(self, count=1): #padrão mutex.
+    def __init__(self): #padrão mutex.
         self.process_queue = Queue()
-        self.count = count
+        self.count = 1
 
     def wait(self, lock):
         self.count -= 1
