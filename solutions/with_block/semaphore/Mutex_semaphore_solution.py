@@ -2,13 +2,12 @@ import threading
 import time
 import random
 from bean.Process import Process
-from bean.Semaphore import Mutex_Semaphore
+from bean.Semaphore import Semaphore
 
 #Variáveis globais auxiliares.
 sem = None
 shared_variable = 0
 lock = threading.Lock()
-
 
 class Mutex_process(Process):
 
@@ -28,19 +27,16 @@ class Mutex_process(Process):
         self.process_state = "running"
         print(f"\nIniciando o {repr(process)}")
         print(f"O {repr(self)} está entrando na região crítica...")
-        time.sleep(0.75)
+
 
         print(f"\nO {repr(self)} está com o acesso a variavél compartilhada...")
-        time.sleep(0.75)
         random.seed(time.time())
         increment = random.randint(0, 10)
 
         print(f"Valor atual da variável compartilhada: {shared_variable}")
-        time.sleep(0.75)
         shared_variable += increment
 
         print(f"\nO {repr(self)} executou a operação variavel compartilhada + {increment}...")
-        time.sleep(0.75)
 
         print(f"Novo valor da variável compartilhada: {shared_variable}")
 
@@ -56,14 +52,12 @@ if __name__ == "__main__":
     qtd_processos_iniciar = int(input("Quantidade de processos a ser iniciada: "))
 
 
-    sem = Mutex_Semaphore()  # semaforo mutex
+    sem = Semaphore(1)  # semaforo mutex
     #iniciando os processos
     for i in range(qtd_processos_iniciar): #com cinco elementos a priori
         random.seed(time.time())
-        process = Process(random.randint(0,999999999)) #gerando ids aleatórios para os processos.
-        thread = threading.Thread(target = semaphore_emulation, args = (process,))
-        thread.start() # inicializando as threads
-
+        process = Mutex_process(random.randint(0,999999999)) #gerando ids aleatórios para os processos.
+        process.start() # inicializando as threads
 
 
 
