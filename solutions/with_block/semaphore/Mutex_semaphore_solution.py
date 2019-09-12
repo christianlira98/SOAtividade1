@@ -4,6 +4,7 @@ import random
 from bean.Process import Process
 from bean.Semaphore import Semaphore
 
+
 #Variáveis globais auxiliares.
 sem = None
 shared_variable = 0

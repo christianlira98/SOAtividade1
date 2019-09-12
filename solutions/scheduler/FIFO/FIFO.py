@@ -10,20 +10,19 @@ shared_variable = 0
 process_fifo = None
 lock = threading.Lock()
 
+
 class FIFO_Process(Process):
 
     def __init__(self, process_id, priority=1, process_state="ready"):
         Process.__init__(self, process_id, priority, process_state)
 
     def run(self):
-        global process_queue, process_fifo,semaforo
+        global process_queue, process_fifo, semaforo
 
         while process_fifo == None or self.process_id != process_fifo.process_id:
             semaforo.wait(lock)
             if not process_queue.empty():
                 process_fifo = process_queue.queue[0]
-
-            #threading.Lock().acquire(timeout=0.5)  # bloqueia e verifica a cada 0.25 se pode ser desbloqueada
 
         self.enter_critical_region()
         time.sleep(5)  # espera 5 segundos
@@ -40,7 +39,6 @@ class FIFO_Process(Process):
         self.process_state = "running"
         print(f"\nIniciando o {repr(self)}")
         print(f"O {repr(self)} está entrando na região crítica...")
-
 
         print(f"\nO {repr(self)} está com o acesso a variavél compartilhada...")
         random.seed(time.time())
@@ -75,7 +73,7 @@ if __name__ == "__main__":
 
     process_queue = Queue()
 
-    semaforo = Semaphore(1) #mutex para auxiliar;
+    semaforo = Semaphore(1)  # mutex para auxiliar;
     # iniciando os processos
     for i in range(qtd_processos_iniciar):  # com cinco elementos a priori
         random.seed(time.time())
