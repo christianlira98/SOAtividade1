@@ -3,11 +3,12 @@ import time
 import threading
 from bean.Process import Process
 from bean.Enum_Priority import enum
+from bean.Semaphore import Semaphore
 from queue import Queue
 
 shared_variable = 0
 process_fifo = None
-
+lock = threading.Lock()
 
 class FIFO_Process(Process):
 
@@ -15,19 +16,21 @@ class FIFO_Process(Process):
         Process.__init__(self, process_id, priority, process_state)
 
     def run(self):
-        global process_queue, process_fifo
+        global process_queue, process_fifo,semaforo
 
         while process_fifo == None or self.process_id != process_fifo.process_id:
+            semaforo.wait(lock)
             if not process_queue.empty():
                 process_fifo = process_queue.queue[0]
-            threading.Lock().acquire(timeout=0.25)  # bloqueia e verifica a cada 0.25 se pode ser desbloqueada
+
+            #threading.Lock().acquire(timeout=0.5)  # bloqueia e verifica a cada 0.25 se pode ser desbloqueada
 
         self.enter_critical_region()
         time.sleep(5)  # espera 5 segundos
         self.leave_critical_region()
 
         if not process_queue.empty():
-            process_fifo = process_queue.get()  # tira da fila.
+            process_queue.get()  # tira da fila.
 
         print("==========================\n")
 
@@ -54,6 +57,7 @@ class FIFO_Process(Process):
         global counter
         self.process_state = "Stopped"
         print(f"\nO {repr(self)} está saindo da região crítica...")
+        semaforo.done()
 
 
 if __name__ == "__main__":
@@ -71,6 +75,7 @@ if __name__ == "__main__":
 
     process_queue = Queue()
 
+    semaforo = Semaphore(1) #mutex para auxiliar;
     # iniciando os processos
     for i in range(qtd_processos_iniciar):  # com cinco elementos a priori
         random.seed(time.time())
