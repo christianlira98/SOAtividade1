@@ -2,19 +2,15 @@ import time
 
 from solutions.busy_wait.peterson.peterson import PetersonProcess
 
+from solutions.busy_wait.peterson.peterson import number_of_processes
 
-peterson1 = PetersonProcess(0, 5)
-peterson2 = PetersonProcess(1, 5)
-peterson3 = PetersonProcess(2, 5)
+number_of_processes = int(input('Número de processos: '))
+number_of_iterations = int(input('Número de iterações: '))
 
-print("Result from peterson1: {}\nResult from peterson2: {}".format(
-    peterson1.get_result(),
-    peterson2.get_result()
-))
+processes = [PetersonProcess(k, number_of_iterations) for k in range(number_of_processes)]
 
-peterson1.start()
-peterson2.start()
-peterson3.start()
+for process in processes:
+    process.start()
 
 '''
 while peterson1.is_running() or peterson2.is_running():

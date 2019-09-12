@@ -1,6 +1,6 @@
 from bean.Process import Process
 
-number_of_processes = 3
+number_of_processes = 5
 
 level_of_process = [-1 for k in range(number_of_processes)]
 last_to_enter = [0 for k in range(number_of_processes)]
@@ -15,6 +15,9 @@ class PetersonProcess(Process):
     STATE_STOPPED = "stopped"
 
     def __init__(self, process_id, iterations=5):
+        global level_of_process, last_to_enter
+        level_of_process = [-1 for k in range(number_of_processes)]
+        last_to_enter = [0 for k in range(number_of_processes)]
         Process.__init__(self, process_id)
         self.iterations = iterations
 
