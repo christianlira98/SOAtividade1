@@ -80,10 +80,10 @@ if __name__ == "__main__":
         process = None
 
         if i <= qtd_low_priority:
-            process = FIFO_Process(random.randint(0, 999999999),
+            process = FIFO_Process(i,
                                    priority=priority_enum.LOW)  # gerando ids aleatórios para os processos.
         else:
-            process = FIFO_Process(random.randint(0, 999999999),
+            process = FIFO_Process(i,
                                    priority=priority_enum.HIGH)  # gerando ids aleatórios para os processos.
 
         process_queue.put(process)

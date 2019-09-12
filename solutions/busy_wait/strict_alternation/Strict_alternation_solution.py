@@ -59,7 +59,7 @@ if __name__ == "__main__":
     #iniciando os processos
     for i in range(qtd_processos_iniciar): #com cinco elementos a priori
         random.seed(time.time())
-        process = Strict_alternation_process(random.randint(0,999999999)) #gerando ids aleatórios para os processos.
+        process = Strict_alternation_process(i) #gerando ids aleatórios para os processos.
         process_list.append(process)
         if i == 0:
             turn = process.process_id
