@@ -4,6 +4,7 @@ import random
 from bean.Process import Process
 from bean.Semaphore import Semaphore
 
+
 #Variáveis globais auxiliares.
 sem = None
 shared_variable = 0
@@ -25,7 +26,7 @@ class Mutex_process(Process):
 
         sem.wait(lock)
         self.process_state = "running"
-        print(f"\nIniciando o {repr(process)}")
+        print(f"\nIniciando o {repr(self)}")
         print(f"O {repr(self)} está entrando na região crítica...")
 
 
@@ -56,7 +57,7 @@ if __name__ == "__main__":
     #iniciando os processos
     for i in range(qtd_processos_iniciar): #com cinco elementos a priori
         random.seed(time.time())
-        process = Mutex_process(random.randint(0,999999999)) #gerando ids aleatórios para os processos.
+        process = Mutex_process(i) #gerando ids aleatórios para os processos.
         process.start() # inicializando as threads
 
 
