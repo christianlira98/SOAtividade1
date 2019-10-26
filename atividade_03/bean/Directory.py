@@ -1,14 +1,14 @@
-from atividade_03.bean import File
+from atividade_03.bean.File import File
 
+class Directory():
 
-class Directory:
-
-    def __init__(self, directory_name, bit_map_table, file_allocation_table, block_size):
+    def __init__(self, directory_name, constantes):
         self.directory_name = directory_name
         self.files = []
-        self.bit_map_table = bit_map_table #ponteiro para o bitmap_table
-        self.file_allocation_table = file_allocation_table #ponteiro para a file_allocation_table
-        self.block_size = block_size
+        self.constantes = constantes
+        self.bit_map_table = constantes.BIT_MAP_TABLE #ponteiro para o bitmap_table
+        self.file_allocation_table = constantes.FILE_ALLOCATION_TABLE #ponteiro para a file_allocation_table
+        self.block_size = constantes.CONST_BLOCK_SIZE
 
     def list_directory(self):
         print(25 * '=')
@@ -24,6 +24,8 @@ class Directory:
         print('Total:', len(self.files))
 
     #Assumindo que file_size sempre venha em MB
+    #o retorno é um booleano dizendo se tem a quantidade de blocos disponível
+    #e também quantos blocos são.
     def is_available_space(self, file_size):
         #Conversão para bits pois o padrão para o tamanho do bloco está em bits
         #Nesse caso é feita a conversão direta de MB para bits e adicionado o tamanho de mais 1 bloco.
@@ -34,28 +36,50 @@ class Directory:
         for key, value in self.bit_map_table.items():
             if(value == 0):
                 aux_counter += key.block_size
-            # 1 KB  == 0.001 MB
-            if(aux_counter * 0.001 >= bit_size):
+            if(aux_counter >= bit_size):
                 break
-        return aux_counter * 0.001 >= bit_size
+        return aux_counter >= bit_size, aux_counter/self.block_size
 
 
     #O objetivo é fazer o controle dos blocos bem como os índices
     #E supondo que o file_size sempre seja dado em MB.
     #E o tamanho do bloco seja em KB.
     def create_file(self, file_size, file_name):
-        is_block_available = self.is_available_space(file_size)
+        is_block_available, block_qtd  = self.is_available_space(file_size)
         if(is_block_available == False):
             print("Não foi possível criar o arquivo")
+            return
+        file = File(self.constantes.CONT_ID_FILE,file_size, file_name)
+        self.constantes.CONT_ID_FILE += 1
 
-        self.files.append( File(file_size, file_name) )
+        index_list = []  # essa lista auxiliar de acordo com o slide 48 (slide: sistemas de arquivos)
+        for key, value in self.bit_map_table.items():
+            if(value == 0 and block_qtd != 1):
+                self.bit_map_table[key] = 1 #setando como bloco usado
+                index_list.append(key)
+                block_qtd -= 1
+            elif(value == 0 and block_qtd == 1):
+                #esse if é para o bloco que será usado para armazenar os outros blocos que foram usado para alocar esse file
+                #como no slide 48
+                self.bit_map_table[key] = 1 #setando como bloco usado
+                key.index_list = index_list #setando a lista de blocos com os dados desse file.
+                self.file_allocation_table[file.file_id] = key
+                break
+
+        self.files.append(file)
+
+    def remove_file(self, file):
+        key = self.file_allocation_table.get(file.file_id)
+        index_list = key.index_list
+
+        for i in index_list:
+            self.bit_map_table[i] = 0 #setando como vago.
+
+        self.bit_map_table[key] = 0
+        key.index_list.clear()
+        del self.file_allocation_table[file.file_id] #deletando ele do file_allocation_table
+
+        self.files.remove(file)
 
 
-if __name__ == '__main__':
-    new_directory = Directory('home')
-    new_directory.list_directory()
-    new_directory.create_file(4096, 'test.txt')
-    new_directory.create_file(4096, 'README.md')
-    new_directory.create_file(4096, 'movie.mp4')
-    new_directory.list_directory()
 
