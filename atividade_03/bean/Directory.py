@@ -2,26 +2,38 @@ from atividade_03.bean.File import File
 
 class Directory():
 
-    def __init__(self, directory_name, constantes):
+    def __init__(self, directory_name, constants, father = None):
         self.directory_name = directory_name
+        self.father = father
+        self.directories = []
         self.files = []
-        self.constantes = constantes
-        self.bit_map_table = constantes.BIT_MAP_TABLE #ponteiro para o bitmap_table
-        self.file_allocation_table = constantes.FILE_ALLOCATION_TABLE #ponteiro para a file_allocation_table
-        self.block_size = constantes.CONST_BLOCK_SIZE
+        self.constantes = constants
+        self.bit_map_table = constants.BIT_MAP_TABLE #ponteiro para o bitmap_table
+        self.file_allocation_table = constants.FILE_ALLOCATION_TABLE #ponteiro para a file_allocation_table
+        self.block_size = constants.CONST_BLOCK_SIZE
 
     def list_directory(self):
         print(25 * '=')
         print('Directory ->', self.directory_name)
-        print('%-5s %-20s' % ('size', 'filename'))
+        print('%-5s %-20s' % ('size', 'filename/dirname'))
         print(25 * '-')
+        if(len(self.files) == 0 and len(self.directories) == 0):
+            print('Empty Directory')
         if len(self.files) > 0:
             for file in self.files:
                 print('%-5d %-20s' % (file.file_size, file.file_name))
-        else:
-            print('Empty Directory')
+        if len(self.directories) > 0:
+            for dir in self.directories:
+                print('%-15s %-20s'% ('',dir.directory_name))
+
         print(25 * '-')
         print('Total:', len(self.files))
+
+    def add_sub_directory(self, dir):
+        self.directories.append(dir)
+
+    def delete_sub_directory(self, dir):
+        self.directories.remove(dir)
 
     #Assumindo que file_size sempre venha em MB
     #o retorno é um booleano dizendo se tem a quantidade de blocos disponível
