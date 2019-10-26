@@ -19,12 +19,13 @@ class Directory():
         print(25 * '-')
         if(len(self.files) == 0 and len(self.directories) == 0):
             print('Empty Directory')
-        if len(self.files) > 0:
-            for file in self.files:
-                print('%-5d %-20s' % (file.file_size, file.file_name))
-        if len(self.directories) > 0:
-            for dir in self.directories:
-                print('%-15s %-20s'% ('',dir.directory_name))
+        else:
+            if len(self.files) > 0:
+                for file in self.files:
+                    print('%-5d %-20s' % (file.file_size, file.file_name))
+            if len(self.directories) > 0:
+                for dir in self.directories:
+                    print('%-15s %-20s'% ('',dir.directory_name))
 
         print(25 * '-')
         print('Total:', len(self.files))
