@@ -42,24 +42,27 @@ class Directory:
 
         self.directories.append(directory)
 
+    def wrapper_del_sub_directory(self, directory):
+        self.delete_sub_directory(directory)
+        self.directories.remove(directory)
+
     #tinha esquecido de desalocar todos os arquivos dentro do diretório que vai ser apagado.
     #algoritmo recursivo para fazer isso.
     def delete_sub_directory(self, directory):
-
+        # iterando de forma reversa, pq estou excluindo os itens da lista
+        #Em tempo de excução
+        #E isso sendo iterado da forma convencional daria problema pois quando fosse excluido, os elementos posteriores da lista teriam
+        # seu index atualizado, e fazendo isso da forma reversa os indices permanecem os mesmos.
+        #E a função consegue realizar o trabalho direito.
         for file in directory.files[::-1]:
             directory.remove_file(file)
 
         #Condição de parada.
         if(len(directory.directories) == 0):
-            self.directories.remove(directory)
             return
-        # iterando de forma reversa, pq estou excluindo os itens da lista
-        #Em tempo de excução no if da condição de parada.
-        #E isso sendo iterado da forma convencional daria problema pois quando fosse excluido, os elementos posteriores da lista teriam
-        # seu index atualizado, e fazendo isso da forma reversa os indices permanecem os mesmos.
-        #E a função consegue realizar o trabalho direito.
         for direc in directory.directories[::-1]:
             directory.delete_sub_directory(direc)
+            directory.directories.remove(direc)
 
 
 

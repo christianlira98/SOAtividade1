@@ -48,7 +48,7 @@ def op(op, name=None, directory=None, size=None):
     elif(len(x) == 0 and op == 'rm'):
         direc = [z for z in directory.directories if z.directory_name == name]
         if(len(direc) > 0):
-            return directory.delete_sub_directory(direc[0])
+            return directory.wrapper_del_sub_directory(direc[0])
     elif(op == 'cd'):
         direc = [z for z in directory.directories if z.directory_name == name]
         if(len(direc) > 0):
@@ -117,6 +117,7 @@ if __name__ == '__main__':
 
         if command == 'exit':
             break
+        """
         elif command == 'ls':
             ls(arguments)
         elif command == 'cd':
@@ -127,7 +128,8 @@ if __name__ == '__main__':
             rm(arguments)
         elif command == 'mkdir':
             mkdir(arguments)
-
+        """
+        
         if len(option) == 3:
             op(option[0], name=option[1], directory=direct, size=int(option[2]))
         elif len(option) == 2:
