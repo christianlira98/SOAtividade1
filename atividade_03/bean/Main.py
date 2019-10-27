@@ -128,7 +128,6 @@ if __name__ == '__main__':
         elif command == 'mkdir':
             mkdir(arguments)
 
-
         if len(option) == 3:
             op(option[0], name=option[1], directory=direct, size=int(option[2]))
         elif len(option) == 2:
@@ -145,6 +144,9 @@ if __name__ == '__main__':
                 op(option[0], name=option[1], directory=direct)
         else:
             op(option[0], directory=direct)
+
+
+
 
 
 

@@ -13,6 +13,9 @@ class Directory:
         self.file_allocation_table = constants.FILE_ALLOCATION_TABLE  # ponteiro para a file_allocation_table
         self.block_size = constants.CONST_BLOCK_SIZE
 
+    def __repr__(self):
+        return f"Directory {self.directory_name} son of {self.father}"
+
     def list_directory(self):
         print(25 * '=')
         print('Directory ->', self.directory_name)
@@ -31,10 +34,35 @@ class Directory:
         print('Total:', len(self.files) + len(self.directories))
 
     def add_sub_directory(self, directory):
+
+        for direc in self.directories:
+            if direc.directory_name == directory.directory_name:
+                print("Já existe um diretório com esse nome.")
+                return
+
         self.directories.append(directory)
 
+    #tinha esquecido de desalocar todos os arquivos dentro do diretório que vai ser apagado.
+    #algoritmo recursivo para fazer isso.
     def delete_sub_directory(self, directory):
-        self.directories.remove(directory)
+
+        for file in directory.files[::-1]:
+            directory.remove_file(file)
+
+        #Condição de parada.
+        if(len(directory.directories) == 0):
+            self.directories.remove(directory)
+            return
+        # iterando de forma reversa, pq estou excluindo os itens da lista
+        #Em tempo de excução no if da condição de parada.
+        #E isso sendo iterado da forma convencional daria problema pois quando fosse excluido, os elementos posteriores da lista teriam
+        # seu index atualizado, e fazendo isso da forma reversa os indices permanecem os mesmos.
+        #E a função consegue realizar o trabalho direito.
+        for direc in directory.directories[::-1]:
+            directory.delete_sub_directory(direc)
+
+
+
 
     """
     Assumindo que file_size sempre venha em MB
@@ -67,6 +95,12 @@ class Directory:
     """
     def create_file(self, file_size, file_name):
         is_block_available, block_qtd = self.is_available_space(file_size)
+
+        for file in self.files:
+            if file.file_name == file_name:
+                print("Já existe um arquivo com esse nome.")
+                return
+
         if not is_block_available:
             print("Não foi possível criar o arquivo")
             return
