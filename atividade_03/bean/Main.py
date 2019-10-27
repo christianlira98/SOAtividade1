@@ -22,12 +22,15 @@ import re
 from atividade_03.bean.Block import Block
 from atividade_03.bean.GLOBAL import GLOBAL
 from atividade_03.bean.Directory import Directory
+from atividade_03.bean.Shell import *
 
 constantes = None
-dir_address = None
-def op(op, name = None, directory = None, size = None):
+actual_directory_address = None
+
+
+def op(op, name=None, directory=None, size=None):
     x = None
-    if(name != None):
+    if name is not None:
         x = re.findall("[.]", name)
     file = []
     direc = []
@@ -70,25 +73,23 @@ if __name__ == '__main__':
 
     CONT_ID_FILE = 1
 
-    CONST_BLOCK_SIZE = 2**14 # 16384 bits que é igual a 2048 KB (aproximadamente 2KB)
+    CONST_BLOCK_SIZE = 2**14 # 16384 bits que é igual a 2048 Bytes (aproximadamente 2KB)
 
-    #instanciando o dict
+    # instanciando o dict
     FILE_ALLOCATION_TABLE = dict()
 
-    #Mapa de bits
-    #Key o objeto do bloco #value (0 ou 1) 0 - para bloco vago - 1 - para bloco ocupado.
-    #exatamente como uma alocaçao utilizando bitmap funciona.
+    # Mapa de bits
+    # Key o objeto do bloco #value (0 ou 1) 0 - para bloco vago - 1 - para bloco ocupado.
+    # exatamente como uma alocacao utilizando bitmap funciona.
 
     BIT_MAP_TABLE = dict()
 
     constantes = GLOBAL(CONT_ID_FILE, CONST_BLOCK_SIZE, FILE_ALLOCATION_TABLE, BIT_MAP_TABLE)
-    ##Lista inicializando blocos de 2KB cada
-    ##Inicializando 100MB de blocos o que dá basicamente 50 000 blocos.
-
+    # Lista inicializando blocos de 2KB cada
+    # Inicializando 100MB de blocos o que da basicamente 50 000 blocos.
     for i in range(50000):
         block = Block(constantes.CONST_BLOCK_SIZE, i)
-        constantes.BIT_MAP_TABLE[block] = 0 #colocando no bitmap como livre.
-
+        constantes.BIT_MAP_TABLE[block] = 0  # colocando no bitmap como livre.
 
     print("\t\t\t\t\t"+28*"*")
     print("\t\t\t\t\t\t"+"Sistema de Arquivos")
@@ -104,28 +105,42 @@ if __name__ == '__main__':
     """
     direct = new_directory
     # ATENÇÃO: o padrão para criar files é assim: > nome_file.extensao tamanho_em_MB
-    dir_address = "/"+new_directory.directory_name
+    actual_directory_address = "/" + new_directory.directory_name
     while True:
-        q = input(dir_address+"$: " )
+        q = input(actual_directory_address + "$: ")
         q = q.lstrip(" ")
         q = q.rstrip(" ")
         option = re.split(r'[\s]', q)
 
-        if (q == "exit"):
-            break
+        command = option[0]
+        arguments = option[1:]
 
-        if(len(option) == 3):
+        if command == 'exit':
+            break
+        elif command == 'ls':
+            ls(arguments)
+        elif command == 'cd':
+            actual_directory_address = cd(arguments)
+        elif command == 'touch':
+            touch(arguments)
+        elif command == 'rm':
+            rm(arguments)
+        elif command == 'mkdir':
+            mkdir(arguments)
+
+
+        if len(option) == 3:
             op(option[0], name=option[1], directory=direct, size=int(option[2]))
-        elif(len(option) == 2):
-            if(option[0] == 'cd'):
+        elif len(option) == 2:
+            if option[0] == 'cd':
                 dir = direct
                 direct = op(option[0], name=option[1], directory=direct) or dir
 
-                if(dir != direct and option[1] != '..'):
-                    dir_address = dir_address+"/"+direct.directory_name
-                elif(dir != direct and option[1] == '..'):
-                    address = tuple(re.split(r'[/]', dir_address))
-                    dir_address = '/'.join(address[0:len(address)-1])
+                if dir != direct and option[1] != '..':
+                    actual_directory_address = actual_directory_address + "/" + direct.directory_name
+                elif dir != direct and option[1] == '..':
+                    address = tuple(re.split(r'[/]', actual_directory_address))
+                    actual_directory_address = '/'.join(address[0:len(address) - 1])
             else:
                 op(option[0], name=option[1], directory=direct)
         else:
