@@ -28,7 +28,7 @@ class Directory:
                 for directory in self.directories:
                     print('%-15s %-20s' % ('', directory.directory_name))
         print(25 * '-')
-        print('Total:', len(self.files))
+        print('Total:', len(self.files) + len(self.directories))
 
     def add_sub_directory(self, directory):
         self.directories.append(directory)
