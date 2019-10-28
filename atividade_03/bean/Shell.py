@@ -72,3 +72,33 @@ def rm(actual_directory, arguments=[]):
         print('File or directory not found')
         return
 
+
+def dump(actual_directory, arguments):
+    if len(arguments) > 2:
+        print('Incorrect arguments for dump')
+        print('Usage: dump [start_block] [end_block]')
+        return
+    bit_map_table = actual_directory.bit_map_table
+    if len(arguments) == 2:
+        if not arguments[0].isdigit() or not arguments[1].isdigit():
+            print('Incorrect argument')
+            return
+        start_block = int(arguments[0])
+        end_block = int(arguments[1])
+    elif len(arguments) == 1:
+        if not arguments[0].isdigit():
+            print('Incorrect argument')
+            return
+        start_block = int(arguments[0])
+        end_block = len(bit_map_table)
+    else:
+        start_block = 0
+        end_block = len(bit_map_table) -1
+    if start_block > end_block:
+        return
+    print('%-5s %-5s' % ('Block', 'Free'))
+    for key, value in bit_map_table.items():
+        block = key
+        block_id = int(block.block_id)
+        if start_block <= block_id < end_block:
+            print('%-5s %-5s' % (block.block_id, value == 1))

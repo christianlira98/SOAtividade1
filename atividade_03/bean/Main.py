@@ -116,3 +116,7 @@ if __name__ == '__main__':
             rm(actual_directory, arguments)
         elif command == 'mkdir':
             mkdir(actual_directory, arguments)
+        elif command == 'dump':
+            dump(actual_directory, arguments)
+        else:
+            print('Command not found')
