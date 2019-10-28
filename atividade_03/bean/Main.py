@@ -21,52 +21,51 @@ import re
 
 from atividade_03.bean.Block import Block
 from atividade_03.bean.GLOBAL import GLOBAL
-from atividade_03.bean.Directory import Directory
 from atividade_03.bean.Shell import *
 
 constantes = None
 actual_directory_address = None
 
 
-def op(op, name=None, directory=None, size=None):
-    x = None
-    if name is not None:
-        x = re.findall("[.]", name)
-    file = []
-    direc = []
-
-    if(op == 'mkdir'):
-        return directory.add_sub_directory(Directory(name, constantes, directory))
-    elif(op == '>'):
-        return directory.create_file(size, name)
-    elif(op == 'ls'):
-        return directory.list_directory()
-    if(len(x) > 0 and op == 'rm'):
-        file = [z for z in directory.files if z.file_name == name]
-        if(len(file) > 0):
-            return directory.remove_file(file[0])
-    elif(len(x) == 0 and op == 'rm'):
-        direc = [z for z in directory.directories if z.directory_name == name]
-        if(len(direc) > 0):
-            return directory.wrapper_del_sub_directory(direc[0])
-    elif(op == 'cd'):
-        direc = [z for z in directory.directories if z.directory_name == name]
-        if(len(direc) > 0):
-            index = directory.directories.index(direc[0])
-            return directory.directories[index]
-
-        if(name == ".." and directory.father != None):
-            return directory.father
-        elif (name == ".." and directory.father == None):
-            print("Você já está no diretório raiz")
-            return
-
-    if (( len(file) == 0 or len(direc) == 0) and op == 'rm'):
-        print("Arquivo não encontrado!")
-        return
-    elif (len(direc) == 0 and op == 'cd'):
-        print("Diretório não encontrado!")
-        return
+# def op(op, name=None, directory=None, size=None):
+#     x = None
+#     if name is not None:
+#         x = re.findall("[.]", name)
+#     file = []
+#     direc = []
+#
+#     if(op == 'mkdir'):
+#         return directory.add_sub_directory(Directory(name, constantes, directory))
+#     elif(op == '>'):
+#         return directory.create_file(size, name)
+#     elif(op == 'ls'):
+#         return directory.list_directory()
+#     if(len(x) > 0 and op == 'rm'):
+#         file = [z for z in directory.files if z.file_name == name]
+#         if(len(file) > 0):
+#             return directory.remove_file(file[0])
+#     elif(len(x) == 0 and op == 'rm'):
+#         direc = [z for z in directory.directories if z.directory_name == name]
+#         if(len(direc) > 0):
+#             return directory.wrapper_del_sub_directory(direc[0])
+#     elif(op == 'cd'):
+#         direc = [z for z in directory.directories if z.directory_name == name]
+#         if(len(direc) > 0):
+#             index = directory.directories.index(direc[0])
+#             return directory.directories[index]
+#
+#         if(name == ".." and directory.father != None):
+#             return directory.father
+#         elif (name == ".." and directory.father == None):
+#             print("Você já está no diretório raiz")
+#             return
+#
+#     if (( len(file) == 0 or len(direc) == 0) and op == 'rm'):
+#         print("Arquivo não encontrado!")
+#         return
+#     elif (len(direc) == 0 and op == 'cd'):
+#         print("Diretório não encontrado!")
+#         return
 
 
 if __name__ == '__main__':
@@ -95,19 +94,9 @@ if __name__ == '__main__':
     print("\t\t\t\t\t\t"+"Sistema de Arquivos")
     print("\t\t\t\t\t" + 28 * "*")
 
-    new_directory = Directory('root', constantes)
-    new_directory.list_directory()
-    """
-    new_directory.create_file(2, 'test.txt')
-    new_directory.create_file(4, 'README.md')
-    new_directory.create_file(2, 'movie.mp4')
-    new_directory.list_directory()
-    """
-    direct = new_directory
-    # ATENÇÃO: o padrão para criar files é assim: > nome_file.extensao tamanho_em_MB
-    actual_directory_address = "/" + new_directory.directory_name
+    actual_directory = Directory('root', constantes)
     while True:
-        q = input(actual_directory_address + "$: ")
+        q = input(actual_directory.get_path() + "$: ")
         q = q.lstrip(" ")
         q = q.rstrip(" ")
         option = re.split(r'[\s]', q)
@@ -117,47 +106,13 @@ if __name__ == '__main__':
 
         if command == 'exit':
             break
-        """
         elif command == 'ls':
-            ls(arguments)
+            ls(actual_directory, arguments)
         elif command == 'cd':
-            actual_directory_address = cd(arguments)
+            actual_directory = cd(actual_directory, arguments)
         elif command == 'touch':
-            touch(arguments)
+            touch(actual_directory, arguments)
         elif command == 'rm':
-            rm(arguments)
+            rm(actual_directory, arguments)
         elif command == 'mkdir':
-            mkdir(arguments)
-        """
-        
-        if len(option) == 3:
-            op(option[0], name=option[1], directory=direct, size=int(option[2]))
-        elif len(option) == 2:
-            if option[0] == 'cd':
-                dir = direct
-                direct = op(option[0], name=option[1], directory=direct) or dir
-
-                if dir != direct and option[1] != '..':
-                    actual_directory_address = actual_directory_address + "/" + direct.directory_name
-                elif dir != direct and option[1] == '..':
-                    address = tuple(re.split(r'[/]', actual_directory_address))
-                    actual_directory_address = '/'.join(address[0:len(address) - 1])
-            else:
-                op(option[0], name=option[1], directory=direct)
-        else:
-            op(option[0], directory=direct)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            mkdir(actual_directory, arguments)

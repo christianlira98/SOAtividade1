@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from atividade_03.bean.File import File
 
 
@@ -12,37 +14,60 @@ class Directory:
         self.bit_map_table = constants.BIT_MAP_TABLE  # ponteiro para o bitmap_table
         self.file_allocation_table = constants.FILE_ALLOCATION_TABLE  # ponteiro para a file_allocation_table
         self.block_size = constants.CONST_BLOCK_SIZE
+        self.creation_date = datetime.now()
+
+    def formatted_creation_date(self):
+        return self.creation_date.strftime("%d/%m/%Y %H:%M")
 
     def __repr__(self):
         return f"Directory {self.directory_name} son of {self.father}"
 
     def list_directory(self):
-        print(25 * '=')
-        print('Directory ->', self.directory_name)
-        print('%-5s %-20s' % ('size', 'filename/dirname'))
-        print(25 * '-')
+        # print(25 * '=')
+        print('Directory:', self.directory_name)
+        print('%-5s %-15s %-20s %-20s' % ('Type', 'Size', 'Creation', 'Name'))
+        # print(25 * '-')
         if len(self.files) == 0 and len(self.directories) == 0:
-            print('Empty Directory')
+            print(40*'-')
         else:
             if len(self.files) > 0:
                 for file in self.files:
-                    print('%-5d %-20s' % (file.file_size, file.file_name))
+                    creation_date = file.formatted_creation_date()
+                    file_size_in_bytes = file.file_size_in_bytes()
+                    print('%-5s %-15s %-20s %-20s' % ('f', file_size_in_bytes, creation_date, file.file_name))
             if len(self.directories) > 0:
                 for directory in self.directories:
-                    print('%-15s %-20s' % ('', directory.directory_name))
-        print(25 * '-')
-        print('Total:', len(self.files) + len(self.directories))
+                    creation_date = directory.formatted_creation_date()
+                    directory_name = directory.directory_name
+                    print('%-5s %-15s %-20s %-20s' % ('d', directory.block_size, creation_date, directory_name))
+        # print(25 * '-')
+        # print('Total:', len(self.files) + len(self.directories))
 
     def add_sub_directory(self, directory):
-
         for direc in self.directories:
             if direc.directory_name == directory.directory_name:
                 print("Já existe um diretório com esse nome.")
                 return
-
         self.directories.append(directory)
 
+    def add_sub_directory_from_name(self, directory_name):
+        if self.exists_file(directory_name):
+            print("Já existe um arquivo com esse nome.")
+            return
+        if self.exists_directory(directory_name):
+            print("Já existe um diretório com esse nome.")
+            return
+        candidate_directory = Directory(directory_name, self.constantes, father=self)
+        self.add_sub_directory(candidate_directory)
+
     def wrapper_del_sub_directory(self, directory):
+        self.delete_sub_directory(directory)
+        self.directories.remove(directory)
+
+    def wrapper_del_sub_directory_from_name(self, directory_name):
+        directory = self.get_directory(directory_name)
+        if directory is None:
+            return
         self.delete_sub_directory(directory)
         self.directories.remove(directory)
 
@@ -56,16 +81,12 @@ class Directory:
         #E a função consegue realizar o trabalho direito.
         for file in directory.files[::-1]:
             directory.remove_file(file)
-
         #Condição de parada.
         if(len(directory.directories) == 0):
             return
         for direc in directory.directories[::-1]:
             directory.delete_sub_directory(direc)
             directory.directories.remove(direc)
-
-
-
 
     """
     Assumindo que file_size sempre venha em MB
@@ -98,12 +119,12 @@ class Directory:
     """
     def create_file(self, file_size, file_name):
         is_block_available, block_qtd = self.is_available_space(file_size)
-
-        for file in self.files:
-            if file.file_name == file_name:
-                print("Já existe um arquivo com esse nome.")
-                return
-
+        if self.exists_file(file_name):
+            print("Já existe um arquivo com esse nome.")
+            return
+        if self.exists_directory(file_name):
+            print("Já existe um diretório com esse nome.")
+            return
         if not is_block_available:
             print("Não foi possível criar o arquivo")
             return
@@ -135,5 +156,56 @@ class Directory:
         del self.file_allocation_table[file.file_id]  # deletando ele do file_allocation_table
         self.files.remove(file)
 
+    def get_path(self):
+        list_directories_name = []
+        directory = self
+        while directory.father is not None:
+            list_directories_name.append(directory.directory_name)
+            directory = directory.father
+        list_directories_name.reverse()
+        if len(list_directories_name) == 0:
+            return '/'
+        path = ''
+        for directory_name in list_directories_name:
+            path += '/' + directory_name
+        return path
+
+    def get_file(self, file_name):
+        """
+        Get if exists a file from the name
+        :param name:
+        :return: the file object with this name
+        """
+        for file in self.files:
+            if file.file_name == file_name:
+                return file
+        return None
+
+    def exists_file(self, name):
+        """
+        Know if exists a file from the name
+        :param name:
+        :return: true if exists a file with this name
+        """
+        return self.get_file(name) is not None
+
+    def exists_directory(self, name):
+        """
+        Know if exists a directory from the name
+        :param name:
+        :return: true if exists a directory with this name
+        """
+        return self.get_directory(name) is not None
+
+    def get_directory(self, directory_name):
+        """
+        Find a directory object from the directory name
+        :param directory_name:
+        :return: the directory object, return None if not exists directory with this name
+        """
+        for directory in self.directories:
+            if directory.directory_name == directory_name:
+                return directory
+        return None
 
 
