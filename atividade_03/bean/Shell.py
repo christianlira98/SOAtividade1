@@ -101,4 +101,7 @@ def dump(actual_directory, arguments):
         block = key
         block_id = int(block.block_id)
         if start_block <= block_id < end_block:
-            print('%-5s %-5s' % (block.block_id, value == 1))
+            is_available = False
+            if value is not None:
+                is_available = repr(value)
+            print('%-5s %-5s' % (block.block_id, is_available))

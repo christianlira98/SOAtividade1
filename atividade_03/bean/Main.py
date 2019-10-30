@@ -88,7 +88,8 @@ if __name__ == '__main__':
     # Inicializando 100MB de blocos o que da basicamente 50 000 blocos.
     for i in range(50000):
         block = Block(constantes.CONST_BLOCK_SIZE, i)
-        constantes.BIT_MAP_TABLE[block] = 0  # colocando no bitmap como livre.
+        #alterando aqui para None ser o padrão como vazio.
+        constantes.BIT_MAP_TABLE[block] = None  # colocando no bitmap como livre.
 
     print("\t\t\t\t\t"+28*"*")
     print("\t\t\t\t\t\t"+"Sistema de Arquivos")

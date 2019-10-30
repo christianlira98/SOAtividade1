@@ -20,7 +20,7 @@ class Directory:
         return self.creation_date.strftime("%d/%m/%Y %H:%M")
 
     def __repr__(self):
-        return f"Directory {self.directory_name} son of {self.father}"
+        return f"(Directory: {self.directory_name} Son of directory:{self.father.directory_name})"
 
     def list_directory(self):
         # print(25 * '=')
@@ -44,18 +44,27 @@ class Directory:
         # print('Total:', len(self.files) + len(self.directories))
 
     def add_sub_directory(self, directory):
-        for direc in self.directories:
-            if direc.directory_name == directory.directory_name:
-                print("Já existe um diretório com esse nome.")
-                return
+        is_available = self.is_available_space_for_directory()
+        if self.exists_file(directory.directory_name):
+            print("It already exists a file with this name")
+            return
+        if self.exists_directory(directory.directory_name):
+            print("It already exists a directory with this name")
+            return
+
+        if not is_available:
+            print("There's no enough space to allocate this repository.")
+            return
+
+        self.add_directory_to_bit_map_table(directory)
         self.directories.append(directory)
 
     def add_sub_directory_from_name(self, directory_name):
         if self.exists_file(directory_name):
-            print("Já existe um arquivo com esse nome.")
+            print("It already exists a file with this name")
             return
         if self.exists_directory(directory_name):
-            print("Já existe um diretório com esse nome.")
+            print("It already exists a directory with this name")
             return
         candidate_directory = Directory(directory_name, self.constantes, father=self)
         self.add_sub_directory(candidate_directory)
@@ -63,6 +72,7 @@ class Directory:
     def wrapper_del_sub_directory(self, directory):
         self.delete_sub_directory(directory)
         self.directories.remove(directory)
+        self.delete_directory_from_bit_map_table(directory)
 
     def wrapper_del_sub_directory_from_name(self, directory_name):
         directory = self.get_directory(directory_name)
@@ -70,6 +80,7 @@ class Directory:
             return
         self.delete_sub_directory(directory)
         self.directories.remove(directory)
+        self.delete_directory_from_bit_map_table(directory)
 
     #tinha esquecido de desalocar todos os arquivos dentro do diretório que vai ser apagado.
     #algoritmo recursivo para fazer isso.
@@ -85,8 +96,22 @@ class Directory:
         if(len(directory.directories) == 0):
             return
         for direc in directory.directories[::-1]:
+            self.delete_directory_from_bit_map_table(direc)
             directory.delete_sub_directory(direc)
             directory.directories.remove(direc)
+
+
+    def delete_directory_from_bit_map_table(self, directory):
+        for key, value in self.bit_map_table.items():
+            if value == directory:
+                self.bit_map_table[key] = None  # setando como vago
+                break
+
+    def add_directory_to_bit_map_table(self, directory):
+        for key, value in self.bit_map_table.items():
+            if value is None:
+                self.bit_map_table[key] = directory  # setando como ocupado
+                break
 
     """
     Assumindo que file_size sempre venha em MB
@@ -95,7 +120,7 @@ class Directory:
     :param file_size: tamanho do arquivo em MB 
     :return: booleano informando se existem blocos disponiveis suficientes, e quantidade de blocos necessarios
     """
-    def is_available_space(self, file_size):
+    def is_available_space_for_file(self, file_size):
         # Conversão para bits pois o padrão para o tamanho do bloco está em bits
         # Nesse caso é feita a conversão direta de MB para bits e adicionado o tamanho de mais 1 bloco.
         # pois esse bloco extra é preciso para estar no file_allocation_table e guardar os blocos
@@ -103,11 +128,21 @@ class Directory:
         bit_size = (file_size * (2**20) * 8) + self.block_size
         aux_counter = 0.0
         for key, value in self.bit_map_table.items():
-            if value == 0:
+            if value is None:
                 aux_counter += key.block_size
             if aux_counter >= bit_size:
                 break
         return aux_counter >= bit_size, aux_counter/self.block_size
+
+    def is_available_space_for_directory(self):
+        bit_size = self.block_size
+        aux_counter = 0.0
+        for key, value in self.bit_map_table.items():
+            if value is None:
+                aux_counter += key.block_size
+            if aux_counter >= bit_size:
+                break
+        return aux_counter >= bit_size
 
     """
     O objetivo eh fazer o controle dos blocos bem como dos indices
@@ -118,29 +153,29 @@ class Directory:
     :return: 
     """
     def create_file(self, file_size, file_name):
-        is_block_available, block_qtd = self.is_available_space(file_size)
+        is_block_available, block_qtd = self.is_available_space_for_file(file_size)
         if self.exists_file(file_name):
-            print("Já existe um arquivo com esse nome.")
+            print("It already exists a file with this name")
             return
         if self.exists_directory(file_name):
-            print("Já existe um diretório com esse nome.")
+            print("It already exists a directory with this name")
             return
         if not is_block_available:
-            print("Não foi possível criar o arquivo")
+            print("It Wasn't possible to create the file")
             return
         file = File(self.constantes.CONT_ID_FILE, file_size, file_name)
         self.constantes.CONT_ID_FILE += 1
         index_list = []  # essa lista auxiliar de acordo com o slide 48 (slide: sistemas de arquivos)
         for key, value in self.bit_map_table.items():
-            if value == 0 and block_qtd != 1:
-                self.bit_map_table[key] = 1  # setando como bloco usado
+            if value is None and block_qtd != 1:
+                self.bit_map_table[key] = file  # setando como bloco usado
                 index_list.append(key)
                 block_qtd -= 1
-            elif value == 0 and block_qtd == 1:
+            elif value is None and block_qtd == 1:
                 # esse if eh para o bloco que sera usado para armazenar os outros blocos que foram usados
                 # para alocar esse file
                 # como no slide 48
-                self.bit_map_table[key] = 1  # setando como bloco usado
+                self.bit_map_table[key] = file  # setando como bloco usado
                 key.index_list = index_list  # setando a lista de blocos com os dados desse file.
                 self.file_allocation_table[file.file_id] = key
                 break
@@ -150,8 +185,8 @@ class Directory:
         index_block = self.file_allocation_table.get(file.file_id)
         index_list = index_block.index_list
         for i in index_list:
-            self.bit_map_table[i] = 0  # setando como vago
-        self.bit_map_table[index_block] = 0
+            self.bit_map_table[i] = None  # setando como vago
+        self.bit_map_table[index_block] = None
         index_block.index_list.clear()
         del self.file_allocation_table[file.file_id]  # deletando ele do file_allocation_table
         self.files.remove(file)
