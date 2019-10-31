@@ -27,47 +27,6 @@ constantes = None
 actual_directory_address = None
 
 
-# def op(op, name=None, directory=None, size=None):
-#     x = None
-#     if name is not None:
-#         x = re.findall("[.]", name)
-#     file = []
-#     direc = []
-#
-#     if(op == 'mkdir'):
-#         return directory.add_sub_directory(Directory(name, constantes, directory))
-#     elif(op == '>'):
-#         return directory.create_file(size, name)
-#     elif(op == 'ls'):
-#         return directory.list_directory()
-#     if(len(x) > 0 and op == 'rm'):
-#         file = [z for z in directory.files if z.file_name == name]
-#         if(len(file) > 0):
-#             return directory.remove_file(file[0])
-#     elif(len(x) == 0 and op == 'rm'):
-#         direc = [z for z in directory.directories if z.directory_name == name]
-#         if(len(direc) > 0):
-#             return directory.wrapper_del_sub_directory(direc[0])
-#     elif(op == 'cd'):
-#         direc = [z for z in directory.directories if z.directory_name == name]
-#         if(len(direc) > 0):
-#             index = directory.directories.index(direc[0])
-#             return directory.directories[index]
-#
-#         if(name == ".." and directory.father != None):
-#             return directory.father
-#         elif (name == ".." and directory.father == None):
-#             print("Você já está no diretório raiz")
-#             return
-#
-#     if (( len(file) == 0 or len(direc) == 0) and op == 'rm'):
-#         print("Arquivo não encontrado!")
-#         return
-#     elif (len(direc) == 0 and op == 'cd'):
-#         print("Diretório não encontrado!")
-#         return
-
-
 if __name__ == '__main__':
 
     CONT_ID_FILE = 1
@@ -85,8 +44,8 @@ if __name__ == '__main__':
 
     constantes = GLOBAL(CONT_ID_FILE, CONST_BLOCK_SIZE, FILE_ALLOCATION_TABLE, BIT_MAP_TABLE)
     # Lista inicializando blocos de 2KB cada
-    # Inicializando 100MB de blocos o que da basicamente 50 000 blocos.
-    for i in range(50000):
+    # Inicializando 10MB de blocos o que da basicamente 5 000 blocos.
+    for i in range(5000):
         block = Block(constantes.CONST_BLOCK_SIZE, i)
         #alterando aqui para None ser o padrão como vazio.
         constantes.BIT_MAP_TABLE[block] = None  # colocando no bitmap como livre.
@@ -96,6 +55,7 @@ if __name__ == '__main__':
     print("\t\t\t\t\t" + 28 * "*")
 
     actual_directory = Directory('root', constantes)
+    actual_directory.add_directory_to_bit_map_table(actual_directory)
     while True:
         q = input(actual_directory.get_path() + "$: ")
         q = q.lstrip(" ")

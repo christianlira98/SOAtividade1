@@ -16,4 +16,4 @@ class File:
         return self.creation_date.strftime("%d-%m-%Y %H:%M")
 
     def __repr__(self):
-        return f"(File: {self.file_name} id: {self.file_id} size: {self.file_size} MB)"
+        return f"(File: {self.file_name} id: {self.file_id} size: {self.file_size} KB)"

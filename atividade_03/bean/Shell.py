@@ -93,7 +93,7 @@ def dump(actual_directory, arguments):
         end_block = len(bit_map_table)
     else:
         start_block = 0
-        end_block = len(bit_map_table) -1
+        end_block = len(bit_map_table)
     if start_block > end_block:
         return
     print('%-5s %-5s' % ('Block', 'Free'))

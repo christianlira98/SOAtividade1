@@ -20,6 +20,8 @@ class Directory:
         return self.creation_date.strftime("%d/%m/%Y %H:%M")
 
     def __repr__(self):
+        if self.father is None:
+            return f"(Directory: {self.directory_name} Son of itself)"
         return f"(Directory: {self.directory_name} Son of directory:{self.father.directory_name})"
 
     def list_directory(self):
@@ -125,7 +127,8 @@ class Directory:
         # Nesse caso é feita a conversão direta de MB para bits e adicionado o tamanho de mais 1 bloco.
         # pois esse bloco extra é preciso para estar no file_allocation_table e guardar os blocos
         # que serão usados nesse file.
-        bit_size = (file_size * (2**20) * 8) + self.block_size
+        # bit_size = (file_size * (2**20) * 8) + self.block_size
+        bit_size = (file_size * (2 ** 10) * 8) + self.block_size
         aux_counter = 0.0
         for key, value in self.bit_map_table.items():
             if value is None:
