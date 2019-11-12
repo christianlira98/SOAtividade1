@@ -42,18 +42,17 @@ if __name__ == '__main__':
 
     BIT_MAP_TABLE = dict()
 
-    BIT_MAP_TABLE_RAID_1 = dict() ##Nova alocação para o raid_1.
 
-    constantes = GLOBAL(CONT_ID_FILE, CONST_BLOCK_SIZE, FILE_ALLOCATION_TABLE, BIT_MAP_TABLE, BIT_MAP_TABLE_RAID_1)
     # Lista inicializando blocos de 2KB cada
     # Inicializando 10MB de blocos o que da basicamente 5 000 blocos.
     for i in range(5000):
-        block = Block(constantes.CONST_BLOCK_SIZE, i)
+        block = Block(CONST_BLOCK_SIZE, i)
         #alterando aqui para None ser o padrão como vazio.
-        constantes.BIT_MAP_TABLE[block] = None  # colocando no bitmap como livre.
+        BIT_MAP_TABLE[block] = None  # colocando no bitmap como livre.
 
     BIT_MAP_TABLE_RAID_1 = BIT_MAP_TABLE.copy()
 
+    constantes = GLOBAL(CONT_ID_FILE, CONST_BLOCK_SIZE, FILE_ALLOCATION_TABLE, BIT_MAP_TABLE, BIT_MAP_TABLE_RAID_1)
     print("\t\t\t\t\t"+28*"*")
     print("\t\t\t\t\t\t"+"Sistema de Arquivos")
     print("\t\t\t\t\t" + 28 * "*")
@@ -76,13 +75,13 @@ if __name__ == '__main__':
             actual_directory = cd(actual_directory, arguments)
         elif command == 'touch':
             touch(actual_directory, arguments)
-            BIT_MAP_TABLE_RAID_1 = BIT_MAP_TABLE.copy()
+            actual_directory.bit_map_table_raid_1 = actual_directory.bit_map_table.copy()
         elif command == 'rm':
             rm(actual_directory, arguments)
-            BIT_MAP_TABLE_RAID_1 = BIT_MAP_TABLE.copy()
+            actual_directory.bit_map_table_raid_1 = actual_directory.bit_map_table.copy()
         elif command == 'mkdir':
             mkdir(actual_directory, arguments)
-            BIT_MAP_TABLE_RAID_1 = BIT_MAP_TABLE.copy()
+            actual_directory.bit_map_table_raid_1 = actual_directory.bit_map_table.copy()
         elif command == 'dump':
             dump(actual_directory, arguments)
         else:
