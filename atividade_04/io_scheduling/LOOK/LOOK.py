@@ -23,8 +23,8 @@ def look(request_sequence, initial_head_pos, initial_direction, disk):
         pos = -1
         for i in range(initial_head_position, len(array_positions), 1):
             if array_positions[i] in request_sequence:
-                request_sequence.remove(array_positions[i]) # tirando elemento já encontrado da lista.
-                if(array_positions[i] not in seek_sequence):
+                while(array_positions[i] in request_sequence):
+                    request_sequence.remove(array_positions[i]) # tirando elemento já encontrado da lista.
                     seek_operations += abs(current_track - array_positions[i])
                     current_track = array_positions[i]
                     seek_sequence.append(array_positions[i])
@@ -39,8 +39,8 @@ def look(request_sequence, initial_head_pos, initial_direction, disk):
 
         for i in range(pos, -1, -1):
             if array_positions[i] in request_sequence:
-                request_sequence.remove(array_positions[i])  # tirando elemento já encontrado da lista.
-                if (array_positions[i] not in seek_sequence):
+                while(array_positions[i] in request_sequence):
+                    request_sequence.remove(array_positions[i])  # tirando elemento já encontrado da lista.
                     seek_operations += abs(current_track - array_positions[i])
                     current_track = array_positions[i]
                     seek_sequence.append(array_positions[i])
@@ -55,8 +55,8 @@ def look(request_sequence, initial_head_pos, initial_direction, disk):
         pos = -1
         for i in range(initial_head_position, -1, -1):
             if array_positions[i] in request_sequence:
-                request_sequence.remove(array_positions[i])  # tirando elemento já encontrado da lista.
-                if (array_positions[i] not in seek_sequence):
+                while(array_positions[i] in request_sequence):
+                    request_sequence.remove(array_positions[i])  # tirando elemento já encontrado da lista.
                     seek_operations += abs(current_track - array_positions[i])
                     current_track = array_positions[i]
                     seek_sequence.append(array_positions[i])
@@ -71,8 +71,8 @@ def look(request_sequence, initial_head_pos, initial_direction, disk):
 
         for i in range(pos, len(array_positions), 1):
             if array_positions[i] in request_sequence:
-                request_sequence.remove(array_positions[i])  # tirando elemento já encontrado da lista.
-                if (array_positions[i] not in seek_sequence):
+                while(array_positions[i] in request_sequence):
+                    request_sequence.remove(array_positions[i])  # tirando elemento já encontrado da lista.
                     seek_operations += abs(current_track - array_positions[i])
                     current_track = array_positions[i]
                     seek_sequence.append(array_positions[i])
@@ -96,12 +96,11 @@ if __name__ == '__main__':
         requests = input("Enter the request sequence separated by comma: ")
         requests = requests.split(',')
         requests = [int(i) for i in requests]
-        aux = requests.copy()
-        aux.sort()
-        if(aux[0] >= 0 and aux[len(aux) - 1] < disk_positions):
-            break
+        min_request, max_request = min(requests), max(requests)
+        if min_request < 0 or max_request >= disk_positions:
+            print(f'Sorry, you have to enter numbers between 0 and {disk_positions - 1}')
         else:
-            print(f"Sorry, you have to enter numbers between 0 and {disk_positions - 1}")
+            break
     while True:
         initial_head_position = int(input("Enter the initial head position: "))
         if(initial_head_position >= 0 and initial_head_position < disk_positions):
