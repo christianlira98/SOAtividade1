@@ -10,7 +10,7 @@ class File:
         self.creation_date = datetime.now()
 
     def file_size_in_bytes(self):
-        return self.file_size * 2**10   # actually file_size is in KB
+        return self.file_size * 2**20   # actually file_size is in MB
 
     def formatted_creation_date(self):
         return self.creation_date.strftime("%d-%m-%Y %H:%M")
