@@ -83,6 +83,7 @@ def dump(actual_directory, arguments):
         return
     bit_map_table = actual_directory.bit_map_table
     bit_map_table_1 = actual_directory.bit_map_table_raid_1
+
     if len(arguments) == 2:
         if not arguments[0].isdigit() or not arguments[1].isdigit():
             print('Incorrect argument')
@@ -100,6 +101,7 @@ def dump(actual_directory, arguments):
         end_block = len(bit_map_table)
     if start_block > end_block:
         return
+
     print("Disco 1")
     print('%-5s %-5s' % ('Block', 'Free'))
     for key, value in bit_map_table.items():

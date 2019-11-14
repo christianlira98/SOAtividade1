@@ -1,6 +1,7 @@
 from datetime import datetime
 
-from atividade_03.bean.File import File
+from atividade_04.RAID.RAID_0.bean.File import File
+from atividade_04.RAID.RAID_0.bean.Shell import *
 
 
 class Directory:
@@ -15,6 +16,16 @@ class Directory:
         self.file_allocation_table = constants.FILE_ALLOCATION_TABLE  # ponteiro para a file_allocation_table
         self.block_size = constants.CONST_BLOCK_SIZE
         self.creation_date = datetime.now()
+
+    @property
+    def bit_map_table(self):
+        self.bit_map_table_strip = get_stripped_list(self._bit_map_table, 2)
+        return self._bit_map_table
+
+    @bit_map_table.setter
+    def bit_map_table(self, bit_map_table):
+        self._bit_map_table = bit_map_table;
+        self.bit_map_table_strip = get_stripped_list(self._bit_map_table, 2)
 
     def formatted_creation_date(self):
         return self.creation_date.strftime("%d/%m/%Y %H:%M")

@@ -19,10 +19,10 @@ Não sei se isso é realmente necessário, mas acho que sim pq tem lá no ava is
 """
 import re
 
-from atividade_03.bean.Block import Block
-from atividade_03.bean.GLOBAL import GLOBAL
-from atividade_03.bean.Shell import *
-from atividade_04.RAID.RAID_0.bean.Shell import dump_raid_1
+from atividade_04.RAID.RAID_0.bean.Block import Block
+from atividade_04.RAID.RAID_0.bean.GLOBAL import GLOBAL
+from atividade_04.RAID.RAID_0.bean.Shell import *
+from atividade_04.RAID.RAID_0.bean.Directory import Directory
 
 constantes = None
 actual_directory_address = None
@@ -80,6 +80,6 @@ if __name__ == '__main__':
             mkdir(actual_directory, arguments)
         elif command == 'dump':
             # dump(actual_directory, arguments)
-            dump_raid_1(actual_directory, arguments)
+            dump_raid_0(actual_directory, arguments)
         else:
             print('Command not found')

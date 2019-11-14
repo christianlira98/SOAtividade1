@@ -109,7 +109,7 @@ def dump(actual_directory, arguments):
             print('%-5s %-5s' % (block.block_id, is_available))
 
 
-def dump_raid_1(actual_directory, arguments):
+def dump_raid_0(actual_directory, arguments):
     if len(arguments) > 2:
         print('Incorrect arguments for dump')
         print('Usage: dump [start_block] [end_block]')
@@ -133,7 +133,9 @@ def dump_raid_1(actual_directory, arguments):
     if start_block > end_block:
         return
 
-    bit_maps_tables = get_stripped_list(bit_map_table, number_of_disk=2)
+    # bit_maps_tables = get_stripped_list(bit_map_table, number_of_disk=2)
+
+    bit_maps_tables = actual_directory.bit_map_table_strip
     bit_map_table_number = 0
     for bit_map_table in bit_maps_tables:
         block_address = 0

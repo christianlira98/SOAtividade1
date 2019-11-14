@@ -14,8 +14,17 @@ class Directory:
         self.bit_map_table = constants.BIT_MAP_TABLE  # ponteiro para o bitmap_table
         self.file_allocation_table = constants.FILE_ALLOCATION_TABLE  # ponteiro para a file_allocation_table
         self.block_size = constants.CONST_BLOCK_SIZE
-        self.bit_map_table_raid_1 = constants.BIT_MAP_TABLE_RAID_1
         self.creation_date = datetime.now()
+
+    @property
+    def bit_map_table(self):
+        self.bit_map_table_raid_1 = self._bit_map_table.copy()
+        return self._bit_map_table
+
+    @bit_map_table.setter
+    def bit_map_table(self, bit_map_table):
+        self._bit_map_table = bit_map_table
+        self.bit_map_table_raid_1 = self._bit_map_table.copy()
 
     def formatted_creation_date(self):
         return self.creation_date.strftime("%d/%m/%Y %H:%M")

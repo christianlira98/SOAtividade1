@@ -50,9 +50,8 @@ if __name__ == '__main__':
         #alterando aqui para None ser o padrão como vazio.
         BIT_MAP_TABLE[block] = None  # colocando no bitmap como livre.
 
-    BIT_MAP_TABLE_RAID_1 = BIT_MAP_TABLE.copy()
 
-    constantes = GLOBAL(CONT_ID_FILE, CONST_BLOCK_SIZE, FILE_ALLOCATION_TABLE, BIT_MAP_TABLE, BIT_MAP_TABLE_RAID_1)
+    constantes = GLOBAL(CONT_ID_FILE, CONST_BLOCK_SIZE, FILE_ALLOCATION_TABLE, BIT_MAP_TABLE)
     print("\t\t\t\t\t"+28*"*")
     print("\t\t\t\t\t\t"+"Sistema de Arquivos")
     print("\t\t\t\t\t" + 28 * "*")
@@ -75,13 +74,13 @@ if __name__ == '__main__':
             actual_directory = cd(actual_directory, arguments)
         elif command == 'touch':
             touch(actual_directory, arguments)
-            actual_directory.bit_map_table_raid_1 = actual_directory.bit_map_table.copy()
+            #actual_directory.bit_map_table_raid_1 = actual_directory.bit_map_table.copy()
         elif command == 'rm':
             rm(actual_directory, arguments)
-            actual_directory.bit_map_table_raid_1 = actual_directory.bit_map_table.copy()
+            #actual_directory.bit_map_table_raid_1 = actual_directory.bit_map_table.copy()
         elif command == 'mkdir':
             mkdir(actual_directory, arguments)
-            actual_directory.bit_map_table_raid_1 = actual_directory.bit_map_table.copy()
+            #actual_directory.bit_map_table_raid_1 = actual_directory.bit_map_table.copy()
         elif command == 'dump':
             dump(actual_directory, arguments)
         else:
